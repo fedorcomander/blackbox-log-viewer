@@ -11,12 +11,6 @@ var FlightLogParser = function(logData) {
         FIRMWARE_TYPE_UNKNOWN = 0,
         FIRMWARE_TYPE_BASEFLIGHT = 1,
         FIRMWARE_TYPE_CLEANFLIGHT = 2,
-        
-        //Assume that even in the most woeful logging situation, we won't miss 10 seconds of frames
-        MAXIMUM_TIME_JUMP_BETWEEN_FRAMES = (10 * 1000000),
-
-        //Likewise for iteration count
-        MAXIMUM_ITERATION_JUMP_BETWEEN_FRAMES = (500 * 10),
 
         // Flight log field predictors:
         
@@ -462,11 +456,7 @@ var FlightLogParser = function(logData) {
             /*
              * Check that iteration count and time both moved forward, and time didn't move forward too much.
              */
-            acceptFrame =
-                mainHistory[0][FlightLogParser.prototype.FLIGHT_LOG_FIELD_INDEX_ITERATION] > lastMainFrameIteration
-                && mainHistory[0][FlightLogParser.prototype.FLIGHT_LOG_FIELD_INDEX_ITERATION] < lastMainFrameIteration + MAXIMUM_ITERATION_JUMP_BETWEEN_FRAMES
-                && mainHistory[0][FlightLogParser.prototype.FLIGHT_LOG_FIELD_INDEX_TIME] >= lastMainFrameTime
-                && mainHistory[0][FlightLogParser.prototype.FLIGHT_LOG_FIELD_INDEX_TIME] < lastMainFrameTime + MAXIMUM_TIME_JUMP_BETWEEN_FRAMES;
+            acceptFrame = true;
         }
 
         if (acceptFrame) {
@@ -640,14 +630,6 @@ var FlightLogParser = function(logData) {
     
     function completeInterframe(frameType, frameStart, frameEnd, raw) {
         // Reject this frame if the time or iteration count jumped too far
-        if (mainStreamIsValid && !raw
-                && (
-                    mainHistory[0][FlightLogParser.prototype.FLIGHT_LOG_FIELD_INDEX_TIME] > lastMainFrameTime + MAXIMUM_TIME_JUMP_BETWEEN_FRAMES
-                    || mainHistory[0][FlightLogParser.prototype.FLIGHT_LOG_FIELD_INDEX_ITERATION] > lastMainFrameIteration + MAXIMUM_ITERATION_JUMP_BETWEEN_FRAMES
-                )) {
-            mainStreamIsValid = false;
-        }
-        
         if (mainStreamIsValid) {
             lastMainFrameIteration = mainHistory[0][FlightLogParser.prototype.FLIGHT_LOG_FIELD_INDEX_ITERATION];
             lastMainFrameTime = mainHistory[0][FlightLogParser.prototype.FLIGHT_LOG_FIELD_INDEX_TIME];
