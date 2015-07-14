@@ -12,6 +12,8 @@
 function FlightLog(logData) {
     var
         ADDITIONAL_COMPUTED_FIELD_COUNT = 6, /** attitude + PID_SUM **/
+        
+        LOG_SUSPENDED_MINIMUM_TIME = 10000,
     
         that = this,
         logIndex = false,
@@ -327,7 +329,8 @@ function FlightLog(logData) {
                 var
                     mainFrameIndex = 0,
                     slowFrameLength = parser.frameDefs.S ? parser.frameDefs.S.count : 0,
-                    lastSlow = parser.frameDefs.S ? iframeDirectory.initialSlow[chunkIndex].slice(0) : [];
+                    lastSlow = parser.frameDefs.S ? iframeDirectory.initialSlow[chunkIndex].slice(0) : [],
+                    prevFrameTime = -1;
                 
                 parser.onFrameReady = function(frameValid, frame, frameType, frameOffset, frameSize) {
                     var
@@ -366,6 +369,13 @@ function FlightLog(logData) {
                                     eventNeedsTimestamp[i].time = frame[FlightLogParser.prototype.FLIGHT_LOG_FIELD_INDEX_TIME];
                                 }
                                 eventNeedsTimestamp.length = 0;
+                                
+                                if (prevFrameTime != -1) {
+                                    if ((frame[FlightLogParser.prototype.FLIGHT_LOG_FIELD_INDEX_TIME] - prevFrameTime) >= LOG_SUSPENDED_MINIMUM_TIME) {
+                                        chunk.gapStartsHere[mainFrameIndex - 1] = true;
+                                    }
+                                }
+                                prevFrameTime = frame[FlightLogParser.prototype.FLIGHT_LOG_FIELD_INDEX_TIME];
                                 
                                 mainFrameIndex++;
                             break;

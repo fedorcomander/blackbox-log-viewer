@@ -401,7 +401,7 @@ function FlightLogGrapher(flightLog, graphConfig, canvas, craftCanvas) {
                 var
                     fieldValue = chunk.frames[frameIndex][fieldIndex],
                     frameTime = chunk.frames[frameIndex][FlightLogParser.prototype.FLIGHT_LOG_FIELD_INDEX_TIME],
-                    nextX, nextY;
+                    nextX, nextY, nextTime;
     
                 nextY = curve.lookup(fieldValue) * yScale;
                 nextX = (frameTime - windowStartTime) * xScale;
@@ -523,6 +523,9 @@ function FlightLogGrapher(flightLog, graphConfig, canvas, craftCanvas) {
             break;
             case FlightLogEvent.INFLIGHT_ADJUSTMENT:
                 drawEventLine(x, labelY, event.data.name + " = " + event.data.value, "rgba(0,255,255,0.5)", 2);
+            break;
+            case FlightLogEvent.LOG_END:
+                drawEventLine(x, labelY, "End of log", "rgba(0,0,255,0.75)", 3);
             break;
             default:
                 drawEventLine(x);
