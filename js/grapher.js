@@ -103,16 +103,16 @@ function FlightLogGrapher(flightLog, graphConfig, canvas, craftCanvas, options) 
     }
     
     function onMouseDown(e) {
-        if (e.which == 1) { //Left mouse button only for seeking
+        if (e.which == 0 || e.which == 1) { //Left mouse button only for seeking
             lastMouseX = e.pageX;
             lastMouseY = e.pageY;
             
             //"capture" the mouse so we can drag outside the boundaries of canvas
-            $(document).on("mousemove", onMouseMove);
+            $(document).on("vmousemove", onMouseMove);
             
             //Release the capture when the mouse is released
-            $(document).one("mouseup", function () {
-                $(document).off("mousemove", onMouseMove);
+            $(document).one("vmouseup", function () {
+                $(document).off("vmousemove", onMouseMove);
             });
             
             e.preventDefault();
@@ -880,7 +880,7 @@ function FlightLogGrapher(flightLog, graphConfig, canvas, craftCanvas, options) 
     }
     
     this.destroy = function() {
-        $(canvas).off("mousedown", onMouseDown);
+        $(canvas).off("vmousedown", onMouseDown);
     };
     
     this.setGraphZoom = function(zoom) {
@@ -911,7 +911,7 @@ function FlightLogGrapher(flightLog, graphConfig, canvas, craftCanvas, options) 
     initializeCraftModel();
 
     //Handle dragging events
-    $(canvas).on("mousedown", onMouseDown);
+    $(canvas).on("vmousedown", onMouseDown);
     
     graphConfig.addListener(refreshGraphConfig);
     refreshGraphConfig();

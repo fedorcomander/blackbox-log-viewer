@@ -31,7 +31,7 @@ html, body {
     position: relative;
     overflow: hidden;
 }
-.btn-file input[type=file] {
+.btn-file input[type=input] {
     position: absolute;
     top: 0;
     right: 0;
@@ -280,11 +280,13 @@ html.has-log .log-graph {
 .playback-rate-control {
     width: 100px;
     margin-right: 13px;
+    margin-top: 10px;
 }
 
 .graph-zoom-control {
     width: 100px;
     margin-right: 13px;
+    margin-top: 10px;
 }
 
 .main-pane {
@@ -335,4 +337,15 @@ progress {
 }
 .navbar-inverse .navbar-brand {
     color: #EAEAEA;
+}
+.ui-loader {
+    display: none;
+}
+
+.playback-rate {
+    display:none;
+}
+
+.graph-zoom {
+    display: none;
 }

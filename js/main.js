@@ -556,32 +556,34 @@ function BlackboxLogViewer() {
                 graphLegend.hide();
             }
         });
-        
-        $(".file-open").change(function(e) {
-            var 
-                files = e.target.files,
-                i;
-            
-            for (i = 0; i < files.length; i++) {
-                var
-                    isLog = files[i].name.match(/\.TXT$/i),
-                    isVideo = files[i].name.match(/\.(AVI|MOV|MP4|MPEG)$/i);
-                
-                if (!isLog && !isVideo) {
-                    if (files[i].size < 10 * 1024 * 1024)
-                        isLog = true; //Assume small files are logs rather than videos
-                    else
-                        isVideo = true;
-                }
-                
-                if (isLog) {
-                    loadLogFile(files[i]);
-                } else if (isVideo) {
-                    loadVideo(files[i]);
-                }
-            }
+
+        $(".file-open").click(function() {
+            window.plugins.mfilechooser.open(['.TXT'], function (uri) {
+                window.resolveLocalFileSystemURL('file://' + uri, function(fileEntry) {
+                     fileEntry.file(function(file) {
+                        var isLog = file.name.match(/\.TXT$/i),
+                            isVideo = file.name.match(/\.(AVI|MOV|MP4|MPEG)$/i);
+
+                        if (!isLog && !isVideo) {
+                            if (file.size < 10 * 1024 * 1024)
+                                isLog = true; //Assume small files are logs rather than videos
+                            else
+                                isVideo = true;
+                        }
+                            if (isLog) {
+                                loadLogFile(file);
+                        } else if (isVideo) {
+                                loadVideo(file);
+                        }
+                    }, function(e) {
+                        console.log("Error: " + e);
+                    })
+                }, function(e) {
+                    console.log("Error: " + e);
+                })
+            })
         });
-        
+
         $(".log-jump-back").click(function() {
             if (hasVideo) {
                 setVideoTime(video.currentTime - SMALL_JUMP_TIME / 1000000);
@@ -786,8 +788,3 @@ function BlackboxLogViewer() {
         seekBar.onSeek = setCurrentBlackboxTime;
     });
 }
-
-// Boostrap's data API is extremely slow when there are a lot of DOM elements churning, don't use it
-$(document).off('.data-api');
-
-window.blackboxLogViewer = new BlackboxLogViewer();
